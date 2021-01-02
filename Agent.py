@@ -28,4 +28,3 @@ class Agent:
     def train(self, social_information):
         self.Min = social_information['min'] if social_information['min'] > self.Min else self.Min
         self.Max = social_information['max'] if social_information['max'] < self.Max else self.Max
-        gr =
