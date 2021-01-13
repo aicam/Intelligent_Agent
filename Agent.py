@@ -14,7 +14,7 @@ class Agent:
         self.Answer = ans
         self.Min = 0
         self.Max = max
-        self.Step = 0.5
+        self.Step = 8
         self.optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
 
     def generate_guess(self, sigma = None):
@@ -27,8 +27,6 @@ class Agent:
         ideal = np.array(1/(self.Answer * np.sqrt(2 * np.pi)) * np.exp( - (bins)**2 / (2 * self.Answer**2)))
         count = np.array(count)
         boundary = int(np.sqrt(self.Sigma))
-        print(count[-boundary + 100:100 + boundary])
-        print(np.where(bins == 0))
         return np.mean((count[-boundary + 100:100 + boundary] - ideal[-boundary + 100:100 + boundary])**2)
 
     def evaluate_sigma(self, sigma):
@@ -45,21 +43,26 @@ class Agent:
         random_index = np.random.choice([0, 1])
         new_sigma = sigmas[random_index] if (sigmas[random_index] < self.Max) and \
                                             (sigmas[random_index] > self.Min) else sigmas[int(not random_index)]
-        print(self.Sigma)
-        print(new_sigma)
-        print(self.evaluate_sigma(new_sigma), "   ", self.evaluate_sigma(self.Sigma))
-        if self.evaluate_sigma(new_sigma) < self.evaluate_sigma(self.Sigma):
-            if new_sigma > self.Sigma:
-                self.Min = self.Sigma
+        # print(self.Sigma)
+        # print(new_sigma)
+        # print(new_sigma, "   ", self.Sigma,
+        #       '     ', self.evaluate_sigma(new_sigma) < self.evaluate_sigma(self.Sigma))
+        try:
+            if int(self.evaluate_sigma(new_sigma)*(10**9)) < int(self.evaluate_sigma(self.Sigma)*(10**9)):
+                # print("Found better solution")
+                if new_sigma > self.Sigma:
+                    self.Min = self.Sigma
+                else:
+                    self.Max = self.Sigma
+                self.Sigma = new_sigma
+                self.Step = np.random.uniform(-5, 5)
             else:
-                self.Max = self.Sigma
-            self.Sigma = new_sigma
-            self.Step = np.random.uniform(-1, 1)
-        else:
-            print("Random assign")
-            random_step = np.random.uniform(-1, 1)
-            self.Sigma = self.Sigma + random_step if \
-                (self.Sigma + random_step < self.Max) and \
-                (self.Sigma + random_step > self.Min) else \
-                self.Sigma - random_step
-        print()
+                # print("Random assign")
+                random_step = np.random.uniform(-1, 1)
+                self.Sigma = self.Sigma + random_step if \
+                    (self.Sigma + random_step < self.Max) and \
+                    (self.Sigma + random_step > self.Min) else \
+                    self.Sigma - random_step
+        except ValueError:
+            pass
+        # print()
