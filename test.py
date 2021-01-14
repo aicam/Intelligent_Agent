@@ -1,9 +1,3 @@
 import numpy as np
-from Agent import Agent
 
-
-
-
-
-
-print(np.sqrt(4))
+print(np.concatenate(([1, 2], [3, 4]), axis=0))

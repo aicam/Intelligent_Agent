@@ -22,15 +22,14 @@ def generate_estimation(attr):
     time_estimation += np.random.uniform(-1, 1)
     return int(time_estimation*1000)
 
-df = pd.DataFrame(columns=['user_id', 'spent_ms', 'is_clicked', 'conditions'])
+attribute_columns = ['attribute_' + str(i) for i in range(attributes_shape[0])]
+df = pd.DataFrame(columns=['user_id', 'spent_ms', 'is_clicked'] + attribute_columns)
 attributes = generate_random_attribute(attributes_p, attributes_shape)
 
 for i in range(total_count):
     es_time = generate_estimation(attributes[:,i])
-    df.loc[i] = [i,
-                 es_time,
-                 1 if np.random.uniform(0, .8) < (1 - np.e**(- int(es_time/1000))) else 0,
-                 ''.join(attributes[:,i].astype(np.str))
-                 ]
+    df.loc[i] = np.concatenate((np.array([i, es_time,
+                          1 if np.random.uniform(0, .8) < (1 - np.e**(- int(es_time/1000))) else 0,
+                 ]), attributes[:, i]), axis=0)
 
 df.to_csv('DOE.csv')
