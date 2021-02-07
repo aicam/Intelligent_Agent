@@ -1,16 +1,27 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import sys
 
+conditions_constraints = [[3, [0, 1, 0]], [2, [1, 0, 1]]]
 
-
-total_count = 1000
-attributes_shape = [3, total_count]
 attributes_p = [.8, .3, .5]
 
 
-condition_p = [.5, .5, .5]
+def generate_conditions(c):
+    t = 0
+    for condition in c:
+        t += condition[0]
+    total_count = t
+    a_s = [3, total_count]
+    attributes = np.zeros(a_s)
+    for i in range(3):
+        con_raw = []
+        for con in c:
+            con_raw += [con[1][i]]*con[0]
+        attributes[i] = np.array(con_raw)
+    return attributes.astype(np.int), a_s
+
+conditions, attributes_shape = generate_conditions(conditions_constraints)
+total_count = attributes_shape[1]
 def generate_random_attribute(p, shape):
     attributes = np.zeros(shape)
     for i in range(attributes.shape[0]):
@@ -39,7 +50,7 @@ def convert_to_meaningfulString(attr):
 attribute_columns = ['gender', 'age', 'education']#['attribute_' + str(i) for i in range(attributes_shape[0])]
 df = pd.DataFrame(columns=['user_id', 'spent_ms', 'is_clicked'] + attribute_columns + ['condition'])
 attributes = generate_random_attribute(attributes_p, attributes_shape)
-conditions = generate_random_attribute(condition_p, attributes_shape)
+
 
 for i in range(total_count):
     es_time, random_attr = generate_estimation(attributes[:,i], conditions[:,i])
