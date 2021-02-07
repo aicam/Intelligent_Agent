@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 
-conditions_constraints = [[3, [0, 1, 0]], [2, [1, 0, 1]]]
+conditions_constraints = [
+    [3, [0, 1, 0]],
+    [2, [1, 0, 1]]]
 
 attributes_p = [.8, .3, .5]
 
